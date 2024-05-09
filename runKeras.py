@@ -160,18 +160,10 @@ for file in pathlib.Path('./images').iterdir():
 
         crop_img = crop(crop_img, [0,0,1,1], expand_box=0.55)
 
-  
-
         input_arr = tf.keras.applications.mobilenet.preprocess_input(np.array([crop_img]))
         input_arr64 = tf.image.resize(input_arr, (64,64))
         letter_predition = letter_model.predict(input_arr64)
         letter_max_class = np.argmax(letter_predition[0]) 
-
-
-
-        # print(f"letter is {letter_labels[letter_max_class]}")
-        # cv2.imshow("crop", cv2.cvtColor(crop_img, cv2.COLOR_RGB2BGR))
-        # cv2.waitKey(0)
 
         crop_img = crop(crop_img, [0,0,1,1], expand_box=0.7)
         input_arr = tf.keras.applications.mobilenet.preprocess_input(np.array([crop_img]))
@@ -183,48 +175,9 @@ for file in pathlib.Path('./images').iterdir():
         bg_color_predition = bg_color_model.predict(input_arr64)
         bg_color_max_class = np.argmax(bg_color_predition[0])
 
-        # print(f"Shape:  {shape_labels[shapes_max_class]} {color_name[bg_color_max_class]}",
-        #       f"Letter:  {letter_labels[letter_max_class]} {color_name[letter_color_max_class]}", sep="\n")
-        # cv2.imshow("crop", cv2.cvtColor(crop_img, cv2.COLOR_RGB2BGR))
-        # cv2.waitKey(0)
-
-
-        #shapeCol, letterCol = ShapeLetterColor.getShapeLetterColor(crop_img)
-        # avgShapeHSV, avgLetterHSV, _, lettermask = ShapeLetterColor.getShapeLetterHSV(cv2.resize(crop_img,(int(120*crop_img.shape[1]/crop_img.shape[0]), 120), interpolation=cv2.INTER_NEAREST))
-        # print(lettermask.shape)
-        # x0=1000
-        # x1=0
-        # y0=1000
-        # y1=0
-        # for j in range(lettermask.shape[0]):
-        #     for k in range(lettermask.shape[1]):
-        #         v = lettermask[j][k]
-        #         if lettermask[j][k] > 0.5:
-        #             x0 = min(x0, j)
-        #             x1 = max(x1, j)
-        #             y0 = min(y0, k)
-        #             y1 = max(y1, k)
-        # print(f"{x0} {x1} {y0} {y1}")
-        # if (x0 < x1 and y0 < y1):
-        #     lettermask = ~lettermask[x0-3:x1+3, y0-3:y1+3]
-        #     lettermask = cv2.cvtColor(lettermask,cv2.COLOR_GRAY2RGB)
-        #     print(f"{lettermask.shape=} {lettermask.dtype=}")
-        #     # lettermask = crop(crop_img, [0.2, 0.2, 0.8, 0.8], expand_box=1)
-        #     # lettermask = cv2.cvtColor(lettermask,cv2.COLOR_BGR2GRAY)
-        #     # lettermask = cv2.cvtColor(lettermask,cv2.COLOR_GRAY2RGB)
-        #     lettermask96 = tf.image.resize(lettermask, (96,96))
-        #     lettermask96 = tf.keras.applications.mobilenet.preprocess_input(np.array([lettermask96]))
-        #     letter_predition = letter_model.predict(lettermask96)
-        #     letter_max_class = np.argmax(letter_predition[0])
-        # else:
-        #     letter_max_class = DID_NOT_FIND
-        # print(f"{letter_labels[letter_max_class]=}")
-        # cv2.imshow("crop", crop_img)
-        # cv2.imshow("letter", lettermask)
-        # cv2.waitKey(0)
-
-        # shapeCol, letterCol = ShapeLetterColor.HSV2Color(*avgShapeHSV), ShapeLetterColor.HSV2Color(*avgLetterHSV)
-
+        print(f"Shape:  {shape_labels[shapes_max_class]} {color_name[bg_color_max_class]}",
+              f"Letter:  {letter_labels[letter_max_class]} {color_name[letter_color_max_class]}", sep="\n")
+     
         # print(box)
         x_center = (box[1]+box[3])/2
         y_center = (box[0]+box[2])/2
@@ -238,6 +191,4 @@ for file in pathlib.Path('./images').iterdir():
     cv2.imwrite(f"./images_detect/{basename}", cv2.cvtColor(new_img, cv2.COLOR_RGB2BGR))
     del img
     del pix
-    # cv2.waitKey(0)
-
 
