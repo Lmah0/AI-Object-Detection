@@ -138,7 +138,7 @@ for file in pathlib.Path('./images').iterdir():
         name=None
     )
     print(f"Time taken to detect: {time.time()-t} seconds")
-    filename = f"C:/Users/schul/Desktop/SUAV/image_object_detection/images/{basename}"
+    filename = f"C:/Users/schul/Desktop/Testing/AI-Object-Detection/images/{basename}"
     img = Image.open(filename)
     # converter = ImageEnhance.Color(img)
     # img2 = converter.enhance(3)
@@ -233,7 +233,8 @@ for file in pathlib.Path('./images').iterdir():
         draw_rect(new_img, box, [f"Shape:  {shape_labels[shapes_max_class]} {color_name[bg_color_max_class]}",
                                  f"Letter:  {letter_labels[letter_max_class]} {color_name[letter_color_max_class]}",
                                  f"GPS: {longitude:.6f}, {latitude:.6f}"])
-    # cv2.imshow("image", new_img)
+    cv2.imshow("image", new_img)
+    cv2.waitKey(0)
     cv2.imwrite(f"./images_detect/{basename}", cv2.cvtColor(new_img, cv2.COLOR_RGB2BGR))
     del img
     del pix
