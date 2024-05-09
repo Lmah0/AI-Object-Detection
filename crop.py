@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 import cv2
+import PIL
+from PIL import Image, ImageEnhance
 import pathlib
 import sys
 import os
@@ -62,6 +64,29 @@ def decoder(predictions):
     boxes = box_utils.np_center_form_to_corner_form(boxes)
     return boxes, confidences
 
+
+# From https://stackoverflow.com/a/59978096
+def kmeans_color_quantization(image, clusters=12, rounds=1):
+    h, w = image.shape[:2]
+    samples = np.zeros([h*w,3], dtype=np.float32)
+    count = 0
+
+    for x in range(h):
+        for y in range(w):
+            samples[count] = image[x][y]
+            count += 1
+
+    compactness, labels, centers = cv2.kmeans(samples,
+            clusters, 
+            None,
+            (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10000, 0.0001), 
+            rounds, 
+            cv2.KMEANS_RANDOM_CENTERS)
+
+    centers = np.uint8(centers)
+    res = centers[labels.flatten()]
+    return res.reshape((image.shape))
+
 model = tf.keras.models.load_model('Initial.h5')
 model.compile()
 
@@ -91,20 +116,24 @@ for file in pathlib.Path('D:/School/SUAV/dataset/Smol').iterdir():
         soft_nms_sigma=0.5,
         name=None
     )
-    img = cv2.imread(f"D:/School/SUAV/dataset/Large/{basename}")
-    # new_img = cv2.resize(img, (640, 640))
+    img = Image.open(f"D:/School/SUAV/dataset/Large/{basename}")
+    converter = ImageEnhance.Color(img)
+    img2 = converter.enhance(3)
+    pix = cv2.cvtColor(np.array(img2), cv2.COLOR_RGB2BGR)
+    # new_img = cv2.resize(pix, (640, 640))
     # print(predictions.shape)
 
     for i in range(len(selected_indices)):
         box = boxes[0][selected_indices[i]]
         conf = selected_scores[i]
         filename = os.path.splitext(basename)[0]
-        cv2.imwrite(f"D:/School/SUAV/dataset/Cropped/{filename}_{i}.jpg", crop(img, box))
-        # cv2.imshow(f"D:/School/SUAV/dataset/Cropped/{filename}_{i}.jpg", crop(img, box))
-        # cv2.waitKey(0)
-        # cv2.imwrite(crop(img, box, conf))
+        cropped = crop(pix, box)
+        cv2.imwrite(f"D:/School/SUAV/dataset/Cropped_quant/{filename}_{i}.png", kmeans_color_quantization(cropped))
+        #cv2.imshow(f"D:/School/SUAV/dataset/Cropped_quant/{filename}_{i}.png", kmeans_color_quantization(cropped))
+        #cv2.waitKey(0)
+        # cv2.imwrite(crop(pix, box, conf))
 
-    # cv2.imshow("image", img)
+    # cv2.imshow("image", pix)
     # cv2.waitKey(0)
  
 

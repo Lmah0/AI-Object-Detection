@@ -25,7 +25,8 @@ def locate(uav_latitude, uav_longitude, uav_altitude, bearing, cam_fov, img_widt
     dist = math.sqrt(obj_x**2 + obj_y**2)
 
     angle = math.atan2(obj_y_px, obj_x_px) # Polar angle of the object point P
-    true_bearing = (bearing + 90 - math.degrees(angle)) % 360
+    true_bearing = (bearing + 90 - math.degrees(angle) + 360) % 360
+    print(f"{true_bearing=}")
     geod = Geodesic.WGS84
     azil = true_bearing # Angle from North CW of the object point P
     g = geod.Direct(uav_latitude, uav_longitude, azil, dist)
