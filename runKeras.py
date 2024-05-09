@@ -160,31 +160,35 @@ for file in pathlib.Path('./images').iterdir():
 
         crop_img = crop(crop_img, [0,0,1,1], expand_box=0.55)
 
-        input_arr = tf.keras.applications.mobilenet.preprocess_input(np.array([crop_img]))
-        input_arr64 = tf.image.resize(input_arr, (64,64))
-        letter_predition = letter_model.predict(input_arr64)
-        letter_max_class = np.argmax(letter_predition[0]) 
+        # input_arr = tf.keras.applications.mobilenet.preprocess_input(np.array([crop_img]))
+        # input_arr64 = tf.image.resize(input_arr, (64,64))
+        # letter_predition = letter_model.predict(input_arr64)
+        # letter_max_class = np.argmax(letter_predition[0]) 
 
         crop_img = crop(crop_img, [0,0,1,1], expand_box=0.7)
         input_arr = tf.keras.applications.mobilenet.preprocess_input(np.array([crop_img]))
         input_arr64 = tf.image.resize(input_arr, (64,64))
 
-        letter_color_predition = letter_color_model.predict(input_arr64)
-        letter_color_max_class = np.argmax(letter_color_predition[0]) 
+        # letter_color_predition = letter_color_model.predict(input_arr64)
+        # letter_color_max_class = np.argmax(letter_color_predition[0]) 
 
         bg_color_predition = bg_color_model.predict(input_arr64)
         bg_color_max_class = np.argmax(bg_color_predition[0])
 
-        print(f"Shape:  {shape_labels[shapes_max_class]} {color_name[bg_color_max_class]}",
-              f"Letter:  {letter_labels[letter_max_class]} {color_name[letter_color_max_class]}", sep="\n")
+        # print(f"Shape:  {shape_labels[shapes_max_class]} {color_name[bg_color_max_class]}",
+        #       f"Letter:  {letter_labels[letter_max_class]} {color_name[letter_color_max_class]}", sep="\n")
+        
+        print(f"Shape: {shape_labels[shapes_max_class]} {color_name[bg_color_max_class]}")
      
         # print(box)
         x_center = (box[1]+box[3])/2
         y_center = (box[0]+box[2])/2
         longitude, latitude = Meta_Data.getGPSPosition(filename, (x_center, y_center))
         # print(f"Shape: {avgShapeHSV}={shapeCol}\tLetter: {avgLetterHSV}={letterCol}")
+        # draw_rect(new_img, box, [f"Shape:  {shape_labels[shapes_max_class]} {color_name[bg_color_max_class]}",
+        #                          f"Letter:  {letter_labels[letter_max_class]} {color_name[letter_color_max_class]}",
+        #                          f"GPS: {longitude:.6f}, {latitude:.6f}"])
         draw_rect(new_img, box, [f"Shape:  {shape_labels[shapes_max_class]} {color_name[bg_color_max_class]}",
-                                 f"Letter:  {letter_labels[letter_max_class]} {color_name[letter_color_max_class]}",
                                  f"GPS: {longitude:.6f}, {latitude:.6f}"])
     cv2.imshow("image", new_img)
     cv2.waitKey(0)
